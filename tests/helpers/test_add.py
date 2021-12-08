@@ -1,17 +1,11 @@
 from helpers.add import add
+import pytest
 
 
-def test_add_1():
-    n, m = 4, 3
-
-    result = add(n, m)
-
-    assert result == 7
-
-
-def test_add_2():
-    n, m = 1, 1
+@pytest.mark.parametrize("input,expected", [((4, 3), 7), ((1, 1), 2), ((1, 13), 14)])
+def test_add_1(input, expected):
+    n, m = input
 
     result = add(n, m)
 
-    assert result == 2
+    assert result == expected
