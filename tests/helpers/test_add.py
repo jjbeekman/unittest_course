@@ -9,3 +9,10 @@ def test_add_1(input, expected):
     result = add(n, m)
 
     assert result == expected
+
+
+def test_add_raises_assertion():
+    n, m = -3, 2
+
+    with pytest.raises(AssertionError):
+        add(n, m)
