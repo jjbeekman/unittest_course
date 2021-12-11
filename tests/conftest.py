@@ -1,4 +1,4 @@
-# Anything that is defined here, will be run during the test discovery fase of pytest
+# Anything that is defined here, will be run during the test discovery phase of pytest
 from models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
