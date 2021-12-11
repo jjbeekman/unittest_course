@@ -5,7 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def connection():
     # Setup
     print("Creating engine")
@@ -18,7 +18,7 @@ def connection():
     connection.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def setup_database(connection):
     # Setup
     print("Creating tables")
@@ -31,10 +31,11 @@ def setup_database(connection):
     Base.metadata.drop_all()
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def db_session(connection, setup_database):
     # Setup
     print("Starting ORM session")
+    transaction = connection.begin()
     scoped_db_session = scoped_session(sessionmaker())
     scoped_db_session.configure(bind=connection)
     db_session = scoped_db_session()
@@ -44,3 +45,5 @@ def db_session(connection, setup_database):
     print()
     print("Removing scoped db session")
     scoped_db_session.remove()
+    print("Rollback transaction")
+    transaction.rollback()
