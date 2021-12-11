@@ -1,23 +1,25 @@
 from models import Base, Shop
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import pytest
 
 
-def test_db_session():
-    # Setup
+@pytest.fixture
+def db_session():
     print("Creating engine")
     engine = create_engine("sqlite:///test.db")
     connection = engine.connect()
-
     print("Creating tables")
     Base.metadata.bind = connection
     Base.metadata.create_all(engine)
-
     print("Starting ORM session")
     scoped_db_session = scoped_session(sessionmaker())
     scoped_db_session.configure(bind=connection)
     db_session = scoped_db_session()
+    return db_session
 
+
+def test_db_session(db_session):
     # Given
     shop = Shop(name="Test shop")
 
@@ -28,3 +30,6 @@ def test_db_session():
     # Then
     shops = db_session.query(Shop).all()
     assert len(shops) == 1
+
+
+
