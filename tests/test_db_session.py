@@ -6,6 +6,7 @@ import pytest
 
 @pytest.fixture
 def db_session():
+    # Setup
     print("Creating engine")
     engine = create_engine("sqlite:///test.db")
     connection = engine.connect()
@@ -16,10 +17,20 @@ def db_session():
     scoped_db_session = scoped_session(sessionmaker())
     scoped_db_session.configure(bind=connection)
     db_session = scoped_db_session()
-    return db_session
+    yield db_session
+
+    # Teardown
+    print()
+    print("Removing scoped db session")
+    scoped_db_session.remove()
+    print("Dropping tables")
+    Base.metadata.drop_all()
+    print("Closing connection")
+    connection.close()
 
 
-def test_db_session(db_session):
+@pytest.mark.parametrize("run", (1, 2, 3))
+def test_db_session(db_session, run):
     # Given
     shop = Shop(name="Test shop")
 
@@ -30,6 +41,3 @@ def test_db_session(db_session):
     # Then
     shops = db_session.query(Shop).all()
     assert len(shops) == 1
-
-
-
